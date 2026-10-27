@@ -13,14 +13,15 @@ cask "bruma" do
   end
 
   depends_on arch: :arm64
-  depends_on macos: ">= :monterey"
+  depends_on macos: :monterey
 
   app "Bruma.app"
 
   # Bruma is not notarized yet: let it open without the Gatekeeper prompt.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Bruma.app"]
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args:           ["-dr", "com.apple.quarantine", "{{appdir}}/Bruma.app"],
+        writable_paths: ["{{appdir}}/Bruma.app"]
   end
 
   uninstall quit: "com.bruma.voice.personal"
