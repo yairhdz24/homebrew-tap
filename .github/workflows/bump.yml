@@ -1,0 +1,33 @@
+name: Update casks
+
+# Checks for a new Bruma release every few hours and updates the cask.
+on:
+  schedule:
+    - cron: "17 */4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bruma:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Bruma to the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=$(gh api repos/yairhdz24/bruma/releases/latest --jq .tag_name)
+          version="${tag#v}"
+          current=$(sed -n 's/^  version "\(.*\)"/\1/p' Casks/bruma.rb)
+          if [ "$version" = "$current" ]; then echo "Already at $version"; exit 0; fi
+          curl -fsSL -o bruma.dmg "https://github.com/yairhdz24/bruma/releases/download/${tag}/Bruma-macOS-Apple-Silicon.dmg"
+          sha=$(sha256sum bruma.dmg | cut -d' ' -f1)
+          rm bruma.dmg
+          sed -i "s/^  version \".*\"/  version \"${version}\"/; s/^  sha256 \".*\"/  sha256 \"${sha}\"/" Casks/bruma.rb
+          git config user.name "Yair Hernández"
+          git config user.email "64717200+yairhdz24@users.noreply.github.com"
+          git commit -am "bruma ${version}"
+          git push
