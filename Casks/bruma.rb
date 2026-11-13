@@ -1,6 +1,6 @@
 cask "bruma" do
-  version "0.7.2"
-  sha256 "7d59371999356583052015c87448c316a9ca5872a7cdec298584f684dc1d86a1"
+  version "0.8.0"
+  sha256 "52efbb9be0c8519b2aef5963c5c2e392bb8ce284a1cadf747ac854f13787dff5"
 
   url "https://github.com/yairhdz24/bruma/releases/download/v#{version}/Bruma-macOS-Apple-Silicon.dmg"
   name "Bruma"
